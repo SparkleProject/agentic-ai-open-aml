@@ -1,0 +1,53 @@
+# ==============================================================================
+# .gitignore — Python / FastAPI / Docker
+# ==============================================================================
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# --- Virtual Environment ---
+venv/
+.venv/
+env/
+
+# --- IDE ---
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# --- Environment ---
+.env
+.env.local
+.env.*.local
+
+# --- Testing ---
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# --- Type Checking ---
+.mypy_cache/
+
+# --- Linting ---
+.ruff_cache/
+
+# --- Docker ---
+docker-compose.override.yml
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- Alembic ---
+alembic/versions/*.pyc
