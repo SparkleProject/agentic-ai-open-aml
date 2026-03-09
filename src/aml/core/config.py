@@ -41,13 +41,33 @@ class Settings(BaseSettings):
     # --- Redis ---
     redis_url: str = "redis://localhost:6379/0"
 
-    # --- AI / LLM ---
-    llm_provider: str = Field(default="bedrock", description="bedrock | ollama | mock")
+    # --- AI / LLM (Chat) ---
+    llm_provider: str = Field(default="mock", description="azure | bedrock | ollama | mock")
+
+    # Azure OpenAI
+    azure_openai_api_key: str | None = None
+    azure_openai_endpoint: str | None = None
+    azure_openai_deployment_name: str | None = None
+    azure_openai_api_version: str = "2024-08-01-preview"
+    azure_openai_reasoning_effort: str = "low"
+
+    # Bedrock (future)
     bedrock_region: str = "us-east-1"
     bedrock_model_id: str = "anthropic.claude-3-5-sonnet-20241022-v2:0"
-    bedrock_embedding_model_id: str = "amazon.titan-embed-text-v2:0"
+
+    # Ollama (LLM)
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "llama3.2"
+
+    # --- Embedding ---
+    embedding_provider: str = Field(default="mock", description="ollama | bedrock | mock")
+    embedding_dimensions: int = Field(default=1024, description="Vector dimensions — must match your Milvus schema")
+
+    # Ollama embedding
+    ollama_embedding_model: str = "mxbai-embed-large"
+
+    # Bedrock embedding (future)
+    bedrock_embedding_model_id: str = "amazon.titan-embed-text-v2:0"
 
     # --- Vector Database ---
     vector_db_provider: str = Field(default="milvus", description="milvus | mock")
