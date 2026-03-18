@@ -18,7 +18,9 @@ from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from aml.api.health import router as health_router
+from aml.api.middleware import TenantMiddleware
 from aml.core.config import Settings, get_settings
+from aml.core.context import get_tenant_id
 from aml.core.logging import setup_logging
 
 logger = structlog.get_logger()
@@ -84,14 +86,24 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         request_id = request.headers.get("X-Request-ID", str(uuid.uuid4()))
         structlog.contextvars.clear_contextvars()
         structlog.contextvars.bind_contextvars(request_id=request_id)
+        # Bind tenant_id if set by TenantMiddleware
+        tenant_id = get_tenant_id()
+        if tenant_id:
+            structlog.contextvars.bind_contextvars(tenant_id=tenant_id)
         response: Response = await call_next(request)
         response.headers["X-Request-ID"] = request_id
         return response
 
+    # Tenant context middleware (runs before request_id middleware in Starlette stack)
+    app.add_middleware(TenantMiddleware)
+
     # --- Routers ---
     app.include_router(health_router, prefix="/api")
 
-    # TODO (Phase 1): app.include_router(tenants_router, prefix="/api/v1")
+    from aml.api.routers.rag import router as rag_router
+
+    app.include_router(rag_router, prefix="/api/v1")
+
     # TODO (Phase 2): app.include_router(alerts_router, prefix="/api/v1")
     # TODO (Phase 2): app.include_router(agents_router, prefix="/api/v1")
     # TODO (Phase 3): app.include_router(reports_router, prefix="/api/v1")

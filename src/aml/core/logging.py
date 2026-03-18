@@ -8,10 +8,21 @@ context when available — essential for multi-tenant debugging and compliance.
 
 import logging
 import sys
+from typing import Any
 
 import structlog
 
 from aml.core.config import Settings
+
+
+def _add_tenant_context(_logger: Any, _method_name: str, event_dict: dict[str, Any]) -> dict[str, Any]:
+    """Inject tenant_id into every log entry when available."""
+    from aml.core.context import get_tenant_id
+
+    tenant_id = get_tenant_id()
+    if tenant_id:
+        event_dict["tenant_id"] = tenant_id
+    return event_dict
 
 
 def setup_logging(settings: Settings) -> None:
@@ -23,6 +34,7 @@ def setup_logging(settings: Settings) -> None:
         structlog.processors.TimeStamper(fmt="iso"),
         structlog.processors.StackInfoRenderer(),
         structlog.processors.UnicodeDecoder(),
+        _add_tenant_context,
     ]
 
     if settings.log_format == "json":
