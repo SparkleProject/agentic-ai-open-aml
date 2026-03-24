@@ -38,7 +38,12 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
     setup_logging(settings)
     await logger.ainfo("application_starting", environment=settings.environment)
 
-    # TODO (Phase 1): Initialise database connection pool
+    # Initialise database connection pool
+    from aml.db.session import close_db, init_db
+
+    init_db(settings)
+    await logger.ainfo("database_initialised")
+
     # TODO (Phase 1): Initialise Redis client
     # TODO (Phase 2): Initialise vector DB client
 
@@ -46,7 +51,7 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
 
     # Shutdown
     await logger.ainfo("application_shutting_down")
-    # TODO (Phase 1): Close database pool
+    await close_db()
     # TODO (Phase 1): Close Redis connection
 
 
