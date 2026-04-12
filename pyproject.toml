@@ -36,6 +36,7 @@ ai = [
     "boto3>=1.35.0",
     "langchain-core>=0.3.0",
     "langchain-aws>=0.2.0",
+    "langgraph>=0.2.0",
     "pymilvus>=2.5.0",
     "tiktoken>=0.8.0",
 ]
