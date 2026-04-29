@@ -2,14 +2,8 @@ import json
 from typing import Any
 
 from aml.agents.state import AgentState, ToolCallResult
+from aml.agents.tools.registry import ToolRegistry
 from aml.services.llm.factory import LLMFactory
-
-# A mock tool registry dictionary for initial implementation
-# In a real app (BE-203), this would be dynamically loaded
-AVAILABLE_TOOLS = {
-    "MockSanctionsTool": lambda params: f"Executed MockSanctionsTool with params: {params}",
-    "MockTransactionTool": lambda params: f"Executed MockTransactionTool with params: {params}",
-}
 
 
 async def planner_node(state: AgentState) -> dict[str, Any]:
@@ -40,6 +34,9 @@ async def reasoner_node(state: AgentState) -> dict[str, Any]:
 
     tools_str = "\\n".join([f"- {t.tool_name}: {t.result}" for t in tools_history])
 
+    registry = ToolRegistry.get_instance()
+    available_schemas = json.dumps(registry.get_tool_schemas(), indent=2)
+
     prompt = f"""
             Current Plan:
             {plan}
@@ -59,11 +56,13 @@ async def reasoner_node(state: AgentState) -> dict[str, Any]:
             }}
             """
 
+    system_prompt = (
+        "You are an AML reasoning agent. Always output valid JSON.\\n" f"Available tools:\\n{available_schemas}"
+    )
+
     llm = LLMFactory.get_provider("azure_openai")
 
-    json_response = await llm.generate_response(
-        prompt=prompt, system_prompt="You are an AML reasoning agent. Always output valid JSON.", temperature=0.1
-    )
+    json_response = await llm.generate_response(prompt=prompt, system_prompt=system_prompt, temperature=0.1)
 
     # Basic JSON parsing
     try:
@@ -76,7 +75,7 @@ async def reasoner_node(state: AgentState) -> dict[str, Any]:
         return {"observations": [{"decision": "CONCLUDE", "conclusion": "Failed to parse reasoning output."}]}
 
 
-def actor_node(state: AgentState) -> dict[str, Any]:
+async def actor_node(state: AgentState) -> dict[str, Any]:
     """
     Executes the tool requested by the reasoner.
     """
@@ -94,7 +93,8 @@ def actor_node(state: AgentState) -> dict[str, Any]:
     tool_name = tool_req.get("name")
     tool_params = tool_req.get("parameters", {})
 
-    result = AVAILABLE_TOOLS[tool_name](tool_params) if tool_name in AVAILABLE_TOOLS else f"Tool {tool_name} not found."
+    registry = ToolRegistry.get_instance()
+    result = await registry.execute(str(tool_name), tool_params)
 
     return {"executed_tools": [ToolCallResult(tool_name=str(tool_name), result=result)]}
 
