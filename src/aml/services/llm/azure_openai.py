@@ -54,7 +54,7 @@ class AzureOpenAIProvider:
         **kwargs: Any,
     ) -> str:
         """Call the Azure OpenAI chat-completions endpoint."""
-        messages: list[dict[str, str]] = []
+        messages: list[Any] = []
         if system_prompt:
             messages.append({"role": "system", "content": system_prompt})
         if history:

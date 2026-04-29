@@ -26,7 +26,7 @@ class AgentState(TypedDict):
     executed_tools: Annotated[list[ToolCallResult], operator.add]
 
     # A generic log of textual messages/insights observed by the agent
-    observations: Annotated[list[str], operator.add]
+    observations: Annotated[list[dict[str, Any]], operator.add]
 
     # Outcome data structure if the agent decides it is finished
     conclusion: dict[str, Any]

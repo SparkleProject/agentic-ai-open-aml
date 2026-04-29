@@ -3,7 +3,8 @@ from typing import Any
 
 from aml.agents.state import AgentState, ToolCallResult
 from aml.agents.tools.registry import ToolRegistry
-from aml.services.llm.factory import LLMFactory
+from aml.core.config import get_settings
+from aml.services.llm.factory import get_llm_provider
 
 
 async def planner_node(state: AgentState) -> dict[str, Any]:
@@ -16,8 +17,8 @@ async def planner_node(state: AgentState) -> dict[str, Any]:
     )
     system_prompt = "You are an expert AML investigator. Outline a plan."
 
-    # Standard factory call. Assume default params for orchestrator.
-    llm = LLMFactory.get_provider("azure_openai")  # Replace with dynamic resolving logic later
+    settings = get_settings()
+    llm = get_llm_provider(settings)  # Replace with dynamic resolving logic later
 
     plan_text = await llm.generate_response(prompt=prompt, system_prompt=system_prompt, temperature=0.2)
 
@@ -60,7 +61,8 @@ async def reasoner_node(state: AgentState) -> dict[str, Any]:
         "You are an AML reasoning agent. Always output valid JSON.\\n" f"Available tools:\\n{available_schemas}"
     )
 
-    llm = LLMFactory.get_provider("azure_openai")
+    settings = get_settings()
+    llm = get_llm_provider(settings)
 
     json_response = await llm.generate_response(prompt=prompt, system_prompt=system_prompt, temperature=0.1)
 

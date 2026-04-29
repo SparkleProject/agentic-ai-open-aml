@@ -1,4 +1,4 @@
-from langgraph.graph import END, START, StateGraph
+from langgraph.graph import END, START, StateGraph  # type: ignore[import-not-found]
 
 from aml.agents.nodes import actor_node, planner_node, reasoner_node, reflector_node
 from aml.agents.state import AgentState

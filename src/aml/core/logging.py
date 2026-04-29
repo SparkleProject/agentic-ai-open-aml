@@ -15,7 +15,9 @@ import structlog
 from aml.core.config import Settings
 
 
-def _add_tenant_context(_logger: Any, _method_name: str, event_dict: dict[str, Any]) -> dict[str, Any]:
+def _add_tenant_context(
+    _logger: Any, _method_name: str, event_dict: structlog.types.EventDict
+) -> structlog.types.EventDict:
     """Inject tenant_id into every log entry when available."""
     from aml.core.context import get_tenant_id
 

@@ -1,0 +1,41 @@
+src/aml/agents/tools/local/transactions.py:21: error: Cannot override writeable attribute with read-only property  [override]
+src/aml/agents/tools/local/transactions.py:25: error: Cannot override writeable attribute with read-only property  [override]
+src/aml/agents/tools/local/transactions.py:32: error: Cannot override writeable attribute with read-only property  [override]
+src/aml/agents/tools/local/screening.py:21: error: Cannot override writeable attribute with read-only property  [override]
+src/aml/agents/tools/local/screening.py:25: error: Cannot override writeable attribute with read-only property  [override]
+src/aml/agents/tools/local/screening.py:32: error: Cannot override writeable attribute with read-only property  [override]
+src/aml/agents/tools/local/screening.py:57: error: Cannot override writeable attribute with read-only property  [override]
+src/aml/agents/tools/local/screening.py:61: error: Cannot override writeable attribute with read-only property  [override]
+src/aml/agents/tools/local/screening.py:65: error: Cannot override writeable attribute with read-only property  [override]
+src/aml/db/models/transaction.py:45: error: Name "Customer" is not defined  [name-defined]
+src/aml/db/models/transaction.py:59: error: Missing type parameters for generic type "dict"  [type-arg]
+src/aml/db/models/tenant.py:24: error: Missing type parameters for generic type "dict"  [type-arg]
+src/aml/db/models/tenant.py:27: error: Name "Customer" is not defined  [name-defined]
+src/aml/db/models/tenant.py:28: error: Name "Alert" is not defined  [name-defined]
+src/aml/db/models/tenant.py:29: error: Name "Case" is not defined  [name-defined]
+src/aml/db/models/customer.py:38: error: Name "Tenant" is not defined  [name-defined]
+src/aml/db/models/customer.py:57: error: Missing type parameters for generic type "dict"  [type-arg]
+src/aml/db/models/customer.py:60: error: Name "Transaction" is not defined  [name-defined]
+src/aml/db/models/case.py:38: error: Name "Tenant" is not defined  [name-defined]
+src/aml/db/models/case.py:60: error: Missing type parameters for generic type "dict"  [type-arg]
+src/aml/db/models/alert.py:43: error: Name "Tenant" is not defined  [name-defined]
+src/aml/db/models/alert.py:69: error: Missing type parameters for generic type "dict"  [type-arg]
+src/aml/db/crud/base.py:27: error: Unused "type: ignore" comment  [unused-ignore]
+src/aml/db/crud/base.py:43: error: Unused "type: ignore" comment  [unused-ignore]
+src/aml/db/crud/base.py:62: error: Unused "type: ignore" comment  [unused-ignore]
+src/aml/core/logging.py:37: error: List item 6 has incompatible type "Callable[[Any, str, dict[str, Any]], dict[str, Any]]"; expected "Callable[[Any, str, MutableMapping[str, Any]], Mapping[str, Any] | str | bytes | bytearray | tuple[Any, ...]]"  [list-item]
+src/aml/agents/tools/mcp/client.py:23: error: Cannot override writeable attribute with read-only property  [override]
+src/aml/agents/tools/mcp/client.py:27: error: Cannot override writeable attribute with read-only property  [override]
+src/aml/agents/tools/mcp/client.py:31: error: Cannot override writeable attribute with read-only property  [override]
+src/aml/api/routers/rag.py:77: error: Argument 1 to "float" has incompatible type "object"; expected "str | Buffer | SupportsFloat | SupportsIndex"  [arg-type]
+src/aml/api/routers/rag.py:78: error: No overload variant of "int" matches argument type "object"  [call-overload]
+src/aml/api/routers/rag.py:78: note: Possible overload variants:
+src/aml/api/routers/rag.py:78: note:     def __new__(cls, str | Buffer | SupportsInt | SupportsIndex | SupportsTrunc = ..., /) -> int
+src/aml/api/routers/rag.py:78: note:     def __new__(cls, str | bytes | bytearray, /, base: SupportsIndex) -> int
+src/aml/app.py:90: error: Name "Any" is not defined  [name-defined]
+src/aml/app.py:90: note: Did you forget to import it from "typing"? (Suggestion: "from typing import Any")
+src/aml/agents/orchestrator.py:1: error: Unused "type: ignore" comment  [unused-ignore]
+src/aml/agents/orchestrator.py:1: error: Cannot find implementation or library stub for module named "langgraph.graph"  [import-not-found]
+src/aml/agents/orchestrator.py:1: note: Error code "import-not-found" not covered by "type: ignore" comment
+src/aml/agents/orchestrator.py:1: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+Found 34 errors in 13 files (checked 53 source files)

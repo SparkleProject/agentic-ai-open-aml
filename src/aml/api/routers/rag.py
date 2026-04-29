@@ -74,8 +74,8 @@ async def query_context(
             QueryResult(
                 text=str(r.get("text", "")),
                 source=str(r.get("source", "")),
-                score=float(r.get("score", 0.0)),
-                chunk_index=int(r.get("chunk_index", 0)),
+                score=float(str(r.get("score", 0.0))),
+                chunk_index=int(str(r.get("chunk_index", 0))),
             )
             for r in results
         ],

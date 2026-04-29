@@ -1,12 +1,16 @@
 """Case model — investigation container created from alerts."""
 
 import enum
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import JSON, ForeignKey, String, Text, Uuid
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from aml.db.base import Base, TenantMixin
+
+if TYPE_CHECKING:
+    from aml.db.models.tenant import Tenant
 
 
 class CaseStatus(enum.StrEnum):
@@ -35,7 +39,7 @@ class Case(TenantMixin, Base):
         nullable=False,
         index=True,
     )
-    tenant: Mapped["Tenant"] = relationship(back_populates="cases")  # noqa: F821
+    tenant: Mapped["Tenant"] = relationship(back_populates="cases")
 
     # Linked alert
     alert_id: Mapped[str | None] = mapped_column(
@@ -57,7 +61,7 @@ class Case(TenantMixin, Base):
     summary: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     # XAI reasoning chain — stores the full agent trace
-    reasoning: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    reasoning: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
 
     def __repr__(self) -> str:
         return f"<Case {self.id} [{self.status.value}]>"

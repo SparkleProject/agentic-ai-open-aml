@@ -12,6 +12,7 @@ Creates and configures the FastAPI app with:
 import uuid
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from typing import Any
 
 import structlog
 from fastapi import FastAPI, Request, Response
@@ -87,7 +88,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     # Request ID middleware — injects a unique ID into every request for tracing
     @app.middleware("http")
-    async def request_id_middleware(request: Request, call_next: ...) -> Response:  # type: ignore[type-arg]
+    async def request_id_middleware(request: Request, call_next: Any) -> Response:
         request_id = request.headers.get("X-Request-ID", str(uuid.uuid4()))
         structlog.contextvars.clear_contextvars()
         structlog.contextvars.bind_contextvars(request_id=request_id)

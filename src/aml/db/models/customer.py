@@ -1,12 +1,17 @@
 """Customer model — the entity being monitored for AML compliance."""
 
 import enum
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import JSON, ForeignKey, String
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from aml.db.base import Base, TenantMixin
+
+if TYPE_CHECKING:
+    from aml.db.models.tenant import Tenant
+    from aml.db.models.transaction import Transaction
 
 
 class CustomerType(enum.StrEnum):
@@ -35,7 +40,7 @@ class Customer(TenantMixin, Base):
     __tablename__ = "customers"
 
     # Foreign key back to tenant
-    tenant: Mapped["Tenant"] = relationship(back_populates="customers")  # noqa: F821
+    tenant: Mapped["Tenant"] = relationship(back_populates="customers")
 
     # Customer identity
     external_id: Mapped[str] = mapped_column(
@@ -54,10 +59,10 @@ class Customer(TenantMixin, Base):
     )
 
     # Flexible metadata (PEP status, nationality, DOB, etc.)
-    metadata_: Mapped[dict | None] = mapped_column("metadata", JSON, nullable=True)
+    metadata_: Mapped[dict[str, Any] | None] = mapped_column("metadata", JSON, nullable=True)
 
     # Relationships
-    transactions: Mapped[list["Transaction"]] = relationship(back_populates="customer", lazy="selectin")  # noqa: F821
+    transactions: Mapped[list["Transaction"]] = relationship(back_populates="customer", lazy="selectin")
 
     # Tenant FK (added explicitly so SQLAlchemy knows which column to join on)
     tenant_id: Mapped[str] = mapped_column(

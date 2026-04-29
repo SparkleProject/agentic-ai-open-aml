@@ -8,15 +8,14 @@ class BaseTool(Protocol):
     Conforms to expected LLM Tool constraints.
     """
 
-    # Internal unique identifier (e.g. SanctionsCheck)
-    name: str
+    @property
+    def name(self) -> str: ...
 
-    # Critical instruction given to the LLM defining when to use this tool
-    description: str
+    @property
+    def description(self) -> str: ...
 
-    # Dict representation of the JSON Schema required to invoke this tool
-    # Extracted mechanically from Pydantic `model_json_schema()`
-    input_schema: dict[str, Any]
+    @property
+    def input_schema(self) -> dict[str, Any]: ...
 
     async def execute(self, params: dict[str, Any]) -> str | dict[str, Any]:
         """

@@ -24,7 +24,7 @@ async def create[T: Base](
     **kwargs: Any,
 ) -> T:
     """Create a new record for the given tenant."""
-    obj = model(tenant_id=tenant_id, **kwargs)  # type: ignore[call-arg]
+    obj = model(tenant_id=tenant_id, **kwargs)
     session.add(obj)
     await session.flush()
     await session.refresh(obj)
@@ -40,7 +40,7 @@ async def get_by_id[T: Base](
 ) -> T | None:
     """Fetch one record by ID, scoped to tenant."""
     stmt = select(model).where(
-        model.id == record_id,  # type: ignore[attr-defined]
+        model.id == record_id,
         model.tenant_id == tenant_id,  # type: ignore[attr-defined]
     )
     result = await session.execute(stmt)
@@ -59,7 +59,7 @@ async def list_by_tenant[T: Base](
     stmt = (
         select(model)
         .where(model.tenant_id == tenant_id)  # type: ignore[attr-defined]
-        .order_by(model.created_at.desc())  # type: ignore[attr-defined]
+        .order_by(model.created_at.desc())
         .limit(limit)
         .offset(offset)
     )
