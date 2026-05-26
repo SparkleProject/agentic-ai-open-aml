@@ -92,7 +92,7 @@ Before diving into phases, every technical decision should be measured against t
 
 | ID | Task | Description | Key Technical Decisions |
 |---|---|---|---|
-| BE-201 | **RAG Pipeline & Context Optimiser** | Ingest regulatory documents, internal policies, and typology libraries into tenant-scoped vector store. Retrieve and compress context before feeding to agent. | Chunking strategy: semantic splitting. Context compression via extractive summarisation to reduce token cost by 40–60%. |
+| BE-201 | **RAG Pipeline & Context Optimiser** | Ingest regulatory documents, internal policies, and typology libraries into tenant-scoped vector store. Retrieve and compress context before feeding to agent. | Hybrid Search (BM25 + Dense Vectors) for exact term matching. Context compression via extractive summarisation to reduce token cost by 40–60%. |
 | BE-202 | **Agent Orchestrator (Reasoning Engine)** | Core agentic loop: Observe → Think → Plan → Act → Reflect. Supports multi-step investigation workflows. | ReAct pattern with tool-use. Built on LangGraph or custom Python state machine. Configurable planning depth per alert severity. |
 | BE-203 | **Tool Registry & MCP Integration** | Pluggable tools: Sanctions Screening, PEP Check, Adverse Media Search, Transaction Lookup, Corporate Structure Unwrapping, OSINT Collector. | Model Context Protocol (MCP) for external data sources. Each tool is an independent service with its own rate limits and fallback. |
 | BE-204 | **Specialised Agent Definitions** | Purpose-built agents: `SanctionsAgent`, `TransactionMonitorAgent`, `CDD Agent`, `SARNarrativeAgent`, `ElderAbuseAgent`. | Each agent has a system prompt, tool whitelist, and risk threshold. Agents can delegate to sub-agents (multi-agent collaboration). |

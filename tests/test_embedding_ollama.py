@@ -5,12 +5,25 @@ Requires: ollama running locally with mxbai-embed-large pulled.
 Run: pytest tests/test_embedding_ollama.py -v -m integration
 """
 
+import httpx
 import pytest
 
 from aml.core.config import Settings
 from aml.services.embedding.factory import get_embedding_provider
 
-pytestmark = pytest.mark.integration
+
+def is_ollama_running():
+    try:
+        httpx.get("http://localhost:11434/")
+        return True
+    except Exception:
+        return False
+
+
+pytestmark = [
+    pytest.mark.integration,
+    pytest.mark.skipif(not is_ollama_running(), reason="Ollama is not running locally"),
+]
 
 
 class TestOllamaEmbeddingIntegration:
