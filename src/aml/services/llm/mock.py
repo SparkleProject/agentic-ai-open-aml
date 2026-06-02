@@ -35,22 +35,49 @@ class MockLLMProvider:
 
         # Reasoner node detection
         if "decide your next action" in prompt_lower:
-            # Check if any tools have already been successfully executed
+            import json
+
+            # 1. Specialized SanctionsAgent
+            if "sanctionsagent" in prompt_lower:
+                # If tool has already run, delegate to CDDAgent
+                if "sanctionsscreeningtool" in prompt_lower:
+                    return json.dumps(
+                        {
+                            "decision": "DELEGATE",
+                            "delegate_request": {
+                                "name": "CDDAgent",
+                                "reason": "Sanctions screening completed. Need CDD beneficial ownership validation.",
+                            },
+                        }
+                    )
+
+                # First turn: Run Sanctions screening
+                return json.dumps(
+                    {
+                        "decision": "TOOL",
+                        "tool_request": {"name": "SanctionsScreeningTool", "parameters": {"entity_name": "bin laden"}},
+                    }
+                )
+
+            # 2. Specialized CDDAgent (runs after delegation)
+            if "cddagent" in prompt_lower:
+                return json.dumps(
+                    {
+                        "decision": "CONCLUDE",
+                        "conclusion": "CDD verification completed. Beneficial ownership resolved to verified person.",
+                    }
+                )
+
+            # Fallback legacy behavior if no specialized agent name is detected
             if "executed tools history" in prompt_lower and any(
                 x in prompt_lower for x in ["sanctionsscreeningtool", "pepscreeningtool", "transactionlookuptool"]
             ):
-                # We have executed a tool. Let's conclude!
-                import json
-
                 return json.dumps(
                     {
                         "decision": "CONCLUDE",
                         "conclusion": "The customer was screened. No PEP flag raised. Wire normal.",
                     }
                 )
-
-            # First turn: Request a screening tool
-            import json
 
             return json.dumps(
                 {

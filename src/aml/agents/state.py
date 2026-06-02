@@ -30,3 +30,9 @@ class AgentState(TypedDict):
 
     # Outcome data structure if the agent decides it is finished
     conclusion: dict[str, Any]
+
+    # Name of the currently active specialized agent
+    active_agent: str
+
+    # Tracks delegation lineage (list of agent names)
+    agent_history: Annotated[list[str], operator.add]

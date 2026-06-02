@@ -22,21 +22,36 @@ async def planner_node(state: AgentState) -> dict[str, Any]:
 
     plan_text = await llm.generate_response(prompt=prompt, system_prompt=system_prompt, temperature=0.2)
 
-    return {"plan": plan_text}
+    active_agent = state.get("active_agent") or "SanctionsAgent"
+
+    return {
+        "plan": plan_text,
+        "active_agent": active_agent,
+        "agent_history": [active_agent] if not state.get("agent_history") else [],
+    }
 
 
 async def reasoner_node(state: AgentState) -> dict[str, Any]:
     """
-    Evaluates current state against the plan and decides whether to act or conclude.
+    Evaluates current state against the plan and decides whether to act, delegate, or conclude.
     Returns JSON.
     """
     plan = state.get("plan", "")
     tools_history = state.get("executed_tools", [])
 
-    tools_str = "\\n".join([f"- {t.tool_name}: {t.result}" for t in tools_history])
+    tools_str = "\n".join([f"- {t.tool_name}: {t.result}" for t in tools_history])
+
+    from aml.agents.specialized.base import AgentRegistry
+
+    active_agent_name = state.get("active_agent") or "SanctionsAgent"
+    agent_def = AgentRegistry.get_agent(active_agent_name)
 
     registry = ToolRegistry.get_instance()
-    available_schemas = json.dumps(registry.get_tool_schemas(), indent=2)
+    all_schemas = registry.get_tool_schemas()
+
+    # Filter schemas down to only those whitelisted by the active agent
+    whitelisted_schemas = [s for s in all_schemas if s["name"] in agent_def.tool_whitelist]
+    available_schemas = json.dumps(whitelisted_schemas, indent=2)
 
     prompt = f"""
             Current Plan:
@@ -45,20 +60,28 @@ async def reasoner_node(state: AgentState) -> dict[str, Any]:
             Executed Tools History:
             {tools_str}
 
+            You are currently executing as the specialized agent: {agent_def.name}.
+            Agent Description: {agent_def.description}
+            Specialized Guidelines:
+            {agent_def.system_prompt}
+
             Decide your next action. You can either:
-            1. Request a tool execution
-            2. Conclude the investigation
+            1. Request a tool execution (Must be from your whitelisted available tools below)
+            2. Delegate the investigation to a different specialized agent
+               (Use this if you need information or actions that require tools outside your whitelist)
+            3. Conclude the investigation
 
             Output strictly JSON with the format:
             {{
-                "decision": "TOOL" | "CONCLUDE",
+                "decision": "TOOL" | "CONCLUDE" | "DELEGATE",
                 "tool_request": {{"name": "ToolName", "parameters": {{...}}}}, // Only if TOOL
+                "delegate_request": {{"name": "AgentName", "reason": "Why you are delegating"}}, // Only if DELEGATE
                 "conclusion": "Final reasoning here" // Only if CONCLUDE
             }}
             """
 
     system_prompt = (
-        "You are an AML reasoning agent. Always output valid JSON.\\n" f"Available tools:\\n{available_schemas}"
+        f"You are the {agent_def.name}. Always output valid JSON.\n" f"Available tools for you:\n{available_schemas}"
     )
 
     settings = get_settings()
@@ -121,4 +144,23 @@ def reflector_node(state: AgentState) -> dict[str, Any]:
             "narrative": final_conclusion,
             "steps_taken": len(state.get("executed_tools", [])),
         }
+    }
+
+
+def delegator_node(state: AgentState) -> dict[str, Any]:
+    """
+    State-updating node executed on delegation.
+    Extracts the delegation request and updates active_agent and agent_history.
+    """
+    observations = state.get("observations", [])
+    if not observations:
+        return {}
+
+    latest = observations[-1]
+    delegate_req = latest.get("delegate_request", {})
+    target_agent = delegate_req.get("name", "CDDAgent")
+
+    return {
+        "active_agent": target_agent,
+        "agent_history": [target_agent],
     }

@@ -62,6 +62,16 @@ async def investigate_alert(
     alert.status = AlertStatus.INVESTIGATING
     await db.commit()
 
+    # Map alert type to initial specialized active agent
+    initial_agent = "SanctionsAgent"
+    alert_type_lower = alert.alert_type.lower()
+    if "sanction" in alert_type_lower or "pep" in alert_type_lower:
+        initial_agent = "SanctionsAgent"
+    elif "structuring" in alert_type_lower or "transaction" in alert_type_lower or "deposit" in alert_type_lower:
+        initial_agent = "TransactionMonitorAgent"
+    elif "cdd" in alert_type_lower or "kyc" in alert_type_lower or "ubo" in alert_type_lower:
+        initial_agent = "CDDAgent"
+
     # 2. Run LangGraph Orchestrator
     orchestrator = build_orchestrator()
     initial_state = {
@@ -72,6 +82,8 @@ async def investigate_alert(
         "executed_tools": [],
         "observations": [],
         "conclusion": {},
+        "active_agent": initial_agent,
+        "agent_history": [],
     }
 
     try:

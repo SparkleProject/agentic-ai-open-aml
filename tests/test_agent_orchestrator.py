@@ -90,7 +90,10 @@ async def test_agent_orchestrator_graph_execution():
 
     assert "conclusion" in final_state
     assert final_state["conclusion"]["status"] == "COMPLETED"
-    assert "screened" in final_state["conclusion"]["narrative"].lower()
+    assert (
+        "cdd" in final_state["conclusion"]["narrative"].lower()
+        or "screened" in final_state["conclusion"]["narrative"].lower()
+    )
     assert len(final_state["executed_tools"]) >= 1
     assert final_state["executed_tools"][0].tool_name == "SanctionsScreeningTool"
 
@@ -146,4 +149,83 @@ async def test_agent_investigate_api_endpoint(db_session: AsyncSession, client: 
     assert "observations" in alert.details
 
     # Clean up overrides
+    client.app.dependency_overrides.clear()
+
+
+@pytest.mark.asyncio
+async def test_specialized_agent_delegator():
+    """Test that specialized agents run and delegate context dynamically."""
+    MockLLMProvider.canned_responses = []  # Use dynamic smart mock
+
+    orchestrator = build_orchestrator()
+    initial_state = {
+        "alert_id": str(uuid.uuid4()),
+        "tenant_id": "test-tenant",
+        "severity": "high",
+        "plan": "",
+        "executed_tools": [],
+        "observations": [],
+        "conclusion": {},
+        "active_agent": "SanctionsAgent",
+        "agent_history": [],
+    }
+
+    final_state = await orchestrator.ainvoke(initial_state)
+
+    # SanctionsAgent should execute tool, then delegate to CDDAgent, which concludes!
+    assert "conclusion" in final_state
+    assert final_state["active_agent"] == "CDDAgent"
+    assert final_state["agent_history"] == ["SanctionsAgent", "CDDAgent"]
+    assert (
+        "resolved" in final_state["conclusion"]["narrative"].lower()
+        or "completed" in final_state["conclusion"]["narrative"].lower()
+    )
+
+
+@pytest.mark.asyncio
+async def test_agent_api_endpoint_structuring_alerts(db_session: AsyncSession, client: TestClient):
+    """Test that structuring alerts dynamically start with the TransactionMonitorAgent."""
+    MockLLMProvider.canned_responses = []
+
+    tenant_id_str = str(uuid.uuid4())
+    tenant = Tenant(id=uuid.UUID(tenant_id_str), name="Test Tenant", slug="test-tenant")
+    db_session.add(tenant)
+    await db_session.flush()
+
+    # Create structuring alert
+    alert = Alert(
+        tenant_id=tenant_id_str,
+        alert_type="deposit_structuring_anomalies",
+        severity=AlertSeverity.HIGH,
+        status=AlertStatus.NEW,
+        title="Structuring alerts",
+        description="Irregular deposit flows detected.",
+    )
+    db_session.add(alert)
+    await db_session.commit()
+
+    from aml.db.session import get_db
+
+    async def override_db():
+        yield db_session
+
+    client.app.dependency_overrides[get_db] = override_db
+
+    response = client.post(
+        f"/api/v1/agents/alerts/{alert.id}/investigate",
+        headers={"X-Tenant-ID": tenant_id_str},
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+
+    # Refresh alert and check details
+    await db_session.refresh(alert)
+    assert alert.details is not None
+    observations = alert.details.get("observations", [])
+    assert len(observations) >= 1
+    # Legacy fallback behavior inside MockLLMProvider for structuring alerts should conclude immediately.
+    assert alert.status == AlertStatus.RESOLVED
+
     client.app.dependency_overrides.clear()

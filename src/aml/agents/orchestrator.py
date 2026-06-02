@@ -1,6 +1,6 @@
 from langgraph.graph import END, START, StateGraph  # type: ignore[import-not-found]
 
-from aml.agents.nodes import actor_node, planner_node, reasoner_node, reflector_node
+from aml.agents.nodes import actor_node, delegator_node, planner_node, reasoner_node, reflector_node
 from aml.agents.state import AgentState
 
 
@@ -13,8 +13,11 @@ def should_continue(state: AgentState) -> str:
         return "end"
 
     latest = observations[-1]
-    if latest.get("decision") == "TOOL":
+    decision = latest.get("decision")
+    if decision == "TOOL":
         return "act"
+    if decision == "DELEGATE":
+        return "delegate"
 
     return "end"
 
@@ -29,6 +32,7 @@ def build_orchestrator() -> StateGraph:
     workflow.add_node("planner", planner_node)
     workflow.add_node("reasoner", reasoner_node)
     workflow.add_node("actor", actor_node)
+    workflow.add_node("delegator", delegator_node)
     workflow.add_node("reflector", reflector_node)
 
     # Add Edges
@@ -36,10 +40,17 @@ def build_orchestrator() -> StateGraph:
     workflow.add_edge("planner", "reasoner")
 
     # Conditional logic out of the reasoner
-    workflow.add_conditional_edges("reasoner", should_continue, {"act": "actor", "end": "reflector"})
+    workflow.add_conditional_edges(
+        "reasoner",
+        should_continue,
+        {"act": "actor", "delegate": "delegator", "end": "reflector"},
+    )
 
     # Actor loops back to reasoner
     workflow.add_edge("actor", "reasoner")
+
+    # Delegator loops back to reasoner
+    workflow.add_edge("delegator", "reasoner")
 
     # Reflector goes to END
     workflow.add_edge("reflector", END)
