@@ -28,6 +28,15 @@ class MockLLMProvider:
 
         # 2. Dynamic heuristic-based mock behavior for Agentic Core execution
         prompt_lower = prompt.lower()
+        import json
+
+        # Triage engine detection
+        if system_prompt and "alert triage engine" in system_prompt.lower():
+            if any(x in prompt_lower for x in ["false positive", "low risk", "low severity"]):
+                return json.dumps(
+                    {"score": 10, "decision": "AUTO_CLEAR", "rationale": "Cleared as low-risk false positive by mock."}
+                )
+            return json.dumps({"score": 85, "decision": "INVESTIGATE", "rationale": "High risk detected by mock."})
 
         # Planner node detection
         if "generate a plan" in prompt_lower or "generate a concise text-based" in prompt_lower:

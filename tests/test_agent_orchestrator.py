@@ -13,31 +13,6 @@ from aml.services.llm.mock import MockLLMProvider
 
 
 @pytest.fixture(autouse=True)
-def override_settings(monkeypatch):
-    """Override get_settings globally for tests to force mock providers."""
-    import aml.agents.nodes
-    import aml.app
-    import aml.core.config
-    from aml.core.config import Settings
-
-    test_settings = Settings(
-        debug=True,
-        environment="test",
-        llm_provider="mock",
-        vector_db_provider="mock",
-        log_format="console",
-        log_level="DEBUG",
-    )
-
-    # Patch in all imported namespaces to prevent Python's 'from import' copy reference issue
-    monkeypatch.setattr(aml.core.config, "get_settings", lambda: test_settings)
-    monkeypatch.setattr(aml.agents.nodes, "get_settings", lambda: test_settings)
-    monkeypatch.setattr(aml.app, "get_settings", lambda: test_settings)
-
-    yield test_settings
-
-
-@pytest.fixture(autouse=True)
 def clean_tool_registry():
     """Ensure the registry is correctly populated for tests."""
     from aml.agents.tools.local.screening import PEPScreeningTool, SanctionsTool

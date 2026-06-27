@@ -13,8 +13,10 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from aml.agents.orchestrator import build_orchestrator
+from aml.api.routers.rag import _get_rag_service
 from aml.db.models.alert import Alert, AlertStatus
 from aml.db.session import get_db
+from aml.services.triage.service import AlertTriageService
 
 router = APIRouter(prefix="/agents", tags=["Agents"])
 
@@ -57,6 +59,31 @@ async def investigate_alert(
             status_code=404,
             detail=f"Alert with ID {alert_id} not found under tenant {tenant_id}",
         )
+
+    # Add triage step
+    rag_service = await _get_rag_service()
+    triage_service = AlertTriageService(rag_service=rag_service)
+    triage_result = await triage_service.triage_alert(alert)
+
+    if triage_result.decision == "AUTO_CLEAR":
+        alert.status = AlertStatus.FALSE_POSITIVE
+        details = dict(alert.details) if alert.details else {}
+        details["triage"] = triage_result.model_dump()
+        alert.details = details
+        await db.commit()
+        return {
+            "status": "success",
+            "alert_id": alert_id,
+            "tenant_id": tenant_id,
+            "final_alert_status": alert.status.value,
+            "conclusion": {"narrative": f"Alert auto-cleared by triage: {triage_result.rationale}"},
+            "observations": [],
+        }
+
+    # If INVESTIGATE, attach triage context and proceed
+    details = dict(alert.details) if alert.details else {}
+    details["triage"] = triage_result.model_dump()
+    alert.details = details
 
     # Set status to INVESTIGATING
     alert.status = AlertStatus.INVESTIGATING
@@ -101,10 +128,10 @@ async def investigate_alert(
     alert.status = AlertStatus.RESOLVED
 
     # Store conclusion & observations in Alert.details
-    if alert.details is None:
-        alert.details = {}
-    alert.details["agent_conclusion"] = conclusion
-    alert.details["observations"] = observations
+    details = dict(alert.details) if alert.details else {}
+    details["agent_conclusion"] = conclusion
+    details["observations"] = observations
+    alert.details = details
 
     await db.commit()
 

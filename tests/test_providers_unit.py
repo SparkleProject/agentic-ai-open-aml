@@ -37,7 +37,13 @@ class TestMockLLM:
             get_llm_provider(settings)
 
     async def test_factory_azure_requires_config(self):
-        settings = Settings(llm_provider="azure", _env_file=None)
+        settings = Settings(
+            llm_provider="azure",
+            azure_openai_api_key=None,
+            azure_openai_endpoint=None,
+            azure_openai_deployment_name=None,
+            _env_file=None,
+        )
         with pytest.raises(ValueError, match="Azure OpenAI requires"):
             get_llm_provider(settings)
 

@@ -119,7 +119,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app.include_router(rag_router, prefix="/api/v1")
 
-    # TODO (Phase 2): app.include_router(alerts_router, prefix="/api/v1")
+    from aml.api.routers.alerts import router as alerts_router
+
+    app.include_router(alerts_router, prefix="/api/v1")
+
     from aml.api.routers.agents import router as agents_router
 
     app.include_router(agents_router, prefix="/api/v1")
