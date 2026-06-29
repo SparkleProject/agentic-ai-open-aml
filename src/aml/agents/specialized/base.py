@@ -65,9 +65,10 @@ SAR_NARRATIVE_AGENT = AgentDefinition(
     system_prompt=(
         "You are the SARNarrativeAgent, specialized in synthesizing complete compliance "
         "histories and audit trails into structured, regulator-ready narratives.\n"
-        "You have NO tools. Synthesize the findings and provide a clean explainable report."
+        "Use the NarrativeDraftTool to generate a draft report. Specify the case_id and "
+        "report_type (e.g. AUSTRAC_SMR, NZ_SAR) to produce a formatted narrative."
     ),
-    tool_whitelist=[],
+    tool_whitelist=["NarrativeDraftTool"],
 )
 
 

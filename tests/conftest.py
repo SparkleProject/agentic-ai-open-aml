@@ -34,6 +34,8 @@ def reset_global_state(monkeypatch, test_settings):
     import aml.app
     import aml.core.config
     import aml.main
+    import aml.services.reporting.narrative
+    import aml.services.reporting.verification
     import aml.services.triage.service
     from aml.services.llm.mock import MockLLMProvider
 
@@ -48,6 +50,8 @@ def reset_global_state(monkeypatch, test_settings):
         aml.app,
         aml.main,
         aml.services.triage.service,
+        aml.services.reporting.narrative,
+        aml.services.reporting.verification,
         aml.api.routers.rag,
         aml.agents.nodes,
     ]:

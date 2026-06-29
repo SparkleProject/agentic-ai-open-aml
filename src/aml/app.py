@@ -130,6 +130,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     from aml.api.routers.transactions import router as transactions_router
 
     app.include_router(transactions_router, prefix="/api/v1")
-    # TODO (Phase 3): app.include_router(reports_router, prefix="/api/v1")
+
+    from aml.api.routers.reports import router as reports_router
+
+    app.include_router(reports_router, prefix="/api/v1")
 
     return app
