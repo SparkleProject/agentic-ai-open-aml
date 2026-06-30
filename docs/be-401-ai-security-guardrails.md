@@ -149,7 +149,7 @@ BE-401 implements a **defence-in-depth guardrail system** that wraps every LLM i
 - **Integration test**: end-to-end: inject a malicious transaction memo → verify the agent handles it safely without being manipulated.
 - The test fixture file serves as a growing corpus of adversarial inputs for continuous red-teaming.
 
-**Why:** Guardrails are only as good as their test coverage. A dedicated red team test suite ensures the guardrails are continuously tested against new attack vectors. The fixture file can be contributed to by the open-source community.
+**Why:** Guardrails are only as good as their test coverage. A dedicated red team test suite ensures the guardrails are continuously tested against new attack vectors. The fixture file serves as a growing corpus of adversarial inputs for continuous red-teaming.
 
 ---
 

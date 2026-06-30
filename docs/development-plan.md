@@ -7,7 +7,7 @@
 
 ## 1. Executive Summary
 
-This document translates the market research in `plan.md` into an actionable, phased development roadmap for an **open-source, Agentic AI–powered AML platform**. The plan is shaped by three forces:
+This document translates the market research in `plan.md` into an actionable, phased development roadmap for an **Agentic AI–powered AML platform**. The plan is shaped by three forces:
 
 | Force | Implication |
 |---|---|
@@ -19,7 +19,7 @@ This document translates the market research in `plan.md` into an actionable, ph
 
 We target the **mid-market and Tranche 2 demographic** (lawyers, accountants, real estate, fintechs) — underserved by enterprise incumbents (Oracle, SAS, NICE Actimize) and priced-out by proprietary AI-native vendors (Unit21, SymphonyAI). Our differentiation:
 
-- **Open source** — transparency, auditability, community-driven typologies
+- **Transparency** — auditability, explainability, regulator-ready reasoning trails
 - **AWS Bedrock native** — managed AI infrastructure, model-agnostic swapping
 - **ANZ-first, globally extensible** — AUSTRAC/NZ FIU reporting baked in, pluggable for FinCEN/FCA
 - **Explainable by default** — every agent decision has a traceable reasoning chain
@@ -53,7 +53,7 @@ Before diving into phases, every technical decision should be measured against t
 | P0-02 | CI/CD pipeline | DevOps | GitHub Actions: lint → test → build → deploy (staging). Infrastructure-as-Code with Terraform/CDK for AWS resources. |
 | P0-03 | Local dev environment | DevOps | Docker Compose for local Postgres, Redis, vector DB (Milvus). Mock Bedrock endpoint for offline development. |
 | P0-04 | ADR (Architecture Decision Records) | Docs | Document key decisions: language choices, DB selections, auth strategy, tenant isolation model. |
-| P0-05 | Coding standards & contribution guide | Docs | Open-source community guidelines, PR templates, issue templates, security policy. |
+| P0-05 | Coding standards & development guide | Docs | Internal development guidelines, PR templates, issue templates, security policy. |
 
 **Exit Criteria:** Any developer can `git clone` → `docker compose up` → have the full stack running locally within 15 minutes.
 
@@ -173,7 +173,7 @@ Before diving into phases, every technical decision should be measured against t
 | BE-501 | **LLM-as-a-Judge Pipeline** | Automated evaluation: a stronger model (Claude 3 Opus / GPT-4o) grades agent investigation quality against a "Golden Dataset" of 500+ labelled cases. | Evaluates: accuracy, completeness, reasoning quality, regulatory language compliance. Runs nightly as CI job. |
 | BE-502 | **OpenTelemetry Instrumentation** | Distributed tracing across all agent steps, tool calls, RAG retrievals, and LLM invocations. | Integration with Grafana/Prometheus or AWS CloudWatch. Latency, error rate, and token usage dashboards. Agent loop detection (infinite reasoning cycles). |
 | BE-503 | **A/B Testing Framework** | Compare agent configurations (different prompts, models, temperature) on identical alert sets. | Feature flagging per tenant. Statistical significance testing before rollout. |
-| BE-504 | **Golden Dataset Curation** | Manage curated test cases with known-good outcomes for regression testing and model evaluation. | Versioned dataset with community contributions. Covers diverse typologies: sanctions, PEPs, adverse media, transaction patterns. |
+| BE-504 | **Golden Dataset Curation** | Manage curated test cases with known-good outcomes for regression testing and model evaluation. | Versioned dataset with internal team contributions. Covers diverse typologies: sanctions, PEPs, adverse media, transaction patterns. |
 
 #### Frontend
 
@@ -188,7 +188,7 @@ Before diving into phases, every technical decision should be measured against t
 
 ### Phase 6: Ecosystem Integrations & Market Readiness (Weeks 35–40)
 
-> **Goal:** CRM-native integrations, multi-jurisdictional support, and open-source community launch.
+> **Goal:** CRM-native integrations, multi-jurisdictional support, and market readiness.
 
 #### Backend
 
@@ -203,18 +203,18 @@ Before diving into phases, every technical decision should be measured against t
 
 | ID | Task | Description |
 |---|---|---|
-| FE-601 | **Marketplace / Plugin Gallery** | Browse and install community-built tools, typologies, report templates, and agent configurations. |
+| FE-601 | **Plugin Gallery** | Browse and install tools, typologies, report templates, and agent configurations. |
 | FE-602 | **Multi-language Support (i18n)** | Interface localisation: English, Māori, Mandarin for ANZ market. Extensible for other locales. |
 
 #### Community & Launch
 
 | ID | Task | Description |
 |---|---|---|
-| C-601 | **Documentation Site** | Docusaurus/MkDocs site: getting started, architecture guide, API reference, contribution guide. |
-| C-602 | **Demo Environment** | Hosted sandbox with synthetic data for potential users to evaluate the platform. |
-| C-603 | **Open-Source Launch** | Apache 2.0 / MIT licence. GitHub release. Product Hunt / Hacker News launch. Conference submissions (KYC360, ACAMS). |
+| C-601 | **Documentation Site** | Internal docs site: getting started, architecture guide, API reference, onboarding guide. |
+| C-602 | **Demo Environment** | Hosted sandbox with synthetic data for stakeholder evaluation. |
+| C-603 | **Product Launch** | Production deployment. Sales collateral. Conference submissions (KYC360, ACAMS). |
 
-**Exit Criteria:** At least 2 CRM integrations live. Multi-jurisdiction reporting working for AU + NZ. Documentation site published. Community contribution workflow tested.
+**Exit Criteria:** At least 2 CRM integrations live. Multi-jurisdiction reporting working for AU + NZ. Documentation site published.
 
 ---
 
@@ -226,13 +226,13 @@ Before diving into phases, every technical decision should be measured against t
 | **Backend** | Python 3.12+ (FastAPI) | Async-first, rich AI/ML ecosystem, rapid development. |
 | **Frontend** | TypeScript + React (Next.js or Vite) | Type safety, component ecosystem, SSR for dashboard performance. |
 | **Database** | PostgreSQL 16 (with RLS) | Multi-tenant isolation, JSONB for flexible schemas, mature ecosystem. |
-| **Vector DB** | Milvus (or Pinecone) | Tenant-namespaced RAG. Milvus for self-hosted/open-source alignment. |
+| **Vector DB** | Milvus (or Pinecone) | Tenant-namespaced RAG. Milvus for self-hosted deployment flexibility. |
 | **Message Queue** | AWS SQS / Kafka | Event-driven transaction monitoring. Decoupled agent orchestration. |
 | **Cache** | Redis | Session management, rate limiting, hot data caching. |
 | **Search** | OpenSearch | Full-text search across cases, customers, and regulatory documents. |
 | **Observability** | OpenTelemetry + Grafana | Vendor-neutral tracing. LLM-specific metrics. |
 | **IaC** | Terraform / AWS CDK | Reproducible environments. Multi-account hub-and-spoke for tenants. |
-| **CI/CD** | GitHub Actions | Native to open-source workflow. |
+| **CI/CD** | GitHub Actions | Automated build, test, deploy pipeline. |
 | **Auth** | Keycloak (or AWS Cognito) | Multi-tenant OIDC. RBAC + ABAC. |
 
 ---
@@ -286,7 +286,7 @@ gantt
 | R3 | High false positive rates undermine analyst trust | High | Low | LLM-as-a-Judge evaluation (BE-501) + analyst feedback loop (FE-501). Target: < 10% false positive rate. |
 | R4 | Token costs exceed revenue at scale | Medium | Medium | Context optimiser (BE-201), per-tenant cost tracking (BE-103), tiered pricing model. |
 | R5 | Prompt injection / adversarial attacks | Critical | Medium | Multi-layer guardrails (BE-401). Regular red-team exercises. Input/output validation. |
-| R6 | Open-source community adoption slow | Medium | Medium | Strong docs (C-601), demo environment (C-602), conference presence, Tranche 2 pain-point marketing. |
+| R6 | Slow market adoption | Medium | Medium | Strong docs (C-601), demo environment (C-602), conference presence, Tranche 2 pain-point marketing. |
 
 ---
 
@@ -299,8 +299,8 @@ gantt
 | SAR/SMR quality score | ≥ 85% LLM-as-a-Judge score | Automated evaluation pipeline |
 | Tenant onboarding time | ≤ 1 hour self-service | Onboarding funnel analytics |
 | Cost per investigation | ≤ $0.50 average | Token usage + compute tracking |
-| Open-source stars | ≥ 500 GitHub stars | GitHub metrics |
-| Active community contributors | ≥ 20 | PR/issue tracking |
+| Customer onboarding | ≥ 10 active tenants | Tenant analytics |
+| Platform uptime | ≥ 99.5% | Infrastructure monitoring |
 
 ---
 
@@ -313,7 +313,7 @@ gantt
 | **Compliance** | Regulatory reporting, KYC/CDD, rule engine | 2–3 engineers |
 | **Frontend** | UI/UX, dashboards, investigation workspace | 2 engineers |
 | **Security & Governance** | Guardrails, audit logging, ISO 42001 | 1–2 engineers |
-| **DevRel & Docs** | Documentation, community, demos | 1 engineer |
+| **Docs & QA** | Documentation, demos, customer success | 1 engineer |
 
 > [!TIP]
 > For a lean start (≤ 5 engineers), collapse into 2 squads: **Platform + Agents** and **Compliance + Frontend**. Security is a shared responsibility. Phases 0–2 are achievable with this structure.

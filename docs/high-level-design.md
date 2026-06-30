@@ -1,8 +1,8 @@
 # High-Level Design (HLD)
-**Agentic AI Open AML Platform**
+**Agentic AI AML Platform**
 
 ## 1. System Overview
-The Agentic AI Open AML platform is an open-source, multi-tenant compliance system tailored for mid-market and Tranche 2 entities (lawyers, accountants, real estate) primarily in the ANZ region.
+The Agentic AI AML platform is a multi-tenant compliance system tailored for mid-market and Tranche 2 entities (lawyers, accountants, real estate) primarily in the ANZ region.
 
 The system transitions away from legacy rules-based transaction monitoring and introduces an **Agentic AI architecture**, where autonomous LLM-driven agents investigate alerts, reason over financial data, utilize RAG (Retrieval-Augmented Generation) for policy context, and generate regulator-ready Suspicious Activity Reports (SARs/SMRs).
 

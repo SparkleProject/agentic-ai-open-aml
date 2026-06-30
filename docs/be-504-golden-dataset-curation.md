@@ -11,7 +11,7 @@ BE-501 (LLM-as-a-Judge) depends on a curated **Golden Dataset** of labelled AML 
 The system must:
 1. Provide a structured format for test cases covering diverse AML typologies.
 2. Support versioned dataset releases for reproducible evaluations.
-3. Enable community contributions (open-source typologies) with review workflow.
+3. Enable internal team contributions with review workflow.
 4. Generate synthetic test cases from real anonymised patterns.
 5. Track dataset coverage across typology categories to identify gaps.
 
@@ -128,7 +128,7 @@ The system must:
 - `POST /api/v1/dataset/releases` — Create a new dataset release.
 - Register in `app.py`.
 
-**Why:** API-driven contribution enables both the platform team and the open-source community to add test cases. The review workflow (approve/reject) maintains quality control.
+**Why:** API-driven contribution enables the team to add test cases. The review workflow (approve/reject) maintains quality control.
 
 ### Step 5: Seed Initial Golden Dataset
 

@@ -1,16 +1,15 @@
-# Agentic AI Open AML
+# Agentic AI AML Platform
 
-> Open-source Agentic AI platform for Anti-Money Laundering compliance.
+> Proprietary Agentic AI platform for Anti-Money Laundering compliance.
 
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://python.org)
 [![Tests](https://img.shields.io/badge/tests-426%20passing-brightgreen.svg)]()
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## What is this?
 
 An AI-powered AML compliance platform that deploys **autonomous agents** to investigate alerts, screen entities, and draft regulatory reports — reducing false positives by up to 90% and investigation times from 45 minutes to under 5.
 
-Built for the underserved **mid-market and Tranche 2** demographic: fintechs, lawyers, accountants, and real estate firms that need affordable, explainable compliance tooling.
+Built for the **mid-market and Tranche 2** demographic: fintechs, lawyers, accountants, and real estate firms that need affordable, explainable compliance tooling.
 
 ### Key Capabilities
 
@@ -26,7 +25,7 @@ Built for the underserved **mid-market and Tranche 2** demographic: fintechs, la
 | **Authentication** | Pluggable auth provider (Strategy pattern) — built-in JWT, configurable for Cognito/Keycloak |
 | **RBAC** | 24 fine-grained permissions, 4 roles (admin, compliance_officer, analyst, auditor), tenant-level customisation |
 | **Observability** | Metrics collector, LLM-as-a-Judge evaluation pipeline, A/B testing framework, golden dataset curation |
-| **Ecosystem** | CRM integrations (Xero), multi-jurisdiction regulatory adapters (AU/NZ/US/UK), event bus, federated typology sharing |
+| **Ecosystem** | CRM integrations (Xero), multi-jurisdiction regulatory adapters (AU/NZ/US/UK), event bus, typology sharing |
 
 ## Architecture
 
@@ -168,10 +167,6 @@ The companion frontend is at [agentic-ai-open-aml-ui](https://github.com/Sparkle
 
 See [docs/development-plan.md](docs/development-plan.md) for the full roadmap.
 
-## Contributing
-
-We welcome contributions! Please read our contribution guide (coming soon) before submitting PRs.
-
 ## License
 
-Apache 2.0 — see [LICENSE](LICENSE) for details.
+Proprietary. All rights reserved. This software is confidential and not for redistribution.

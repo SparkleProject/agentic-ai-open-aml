@@ -6,13 +6,13 @@
 
 ## Context
 
-We are bootstrapping the backend for an open-source Agentic AI AML platform.
+We are bootstrapping the backend for the Agentic AI AML platform.
 Key constraints:
 
 - Must support multi-tenant deployment (data isolation per client)
 - Must integrate with AWS Bedrock for LLM capabilities
 - Must be testable locally without AWS credentials
-- Must support an open-source community contribution model
+- Must support scalable team development with clear module boundaries
 - Target market includes ANZ Tranche 2 entities (lawyers, accountants, real estate)
 
 ## Decision
@@ -23,7 +23,7 @@ Key constraints:
 - Richest AI/ML library ecosystem (LangChain, boto3, scikit-learn)
 - Async-first (FastAPI + asyncpg) for high concurrency
 - Type hints + Pydantic for runtime validation
-- Large contributor pool for open-source adoption
+- Strong hiring pool and ecosystem maturity
 
 ### Project Layout
 **`src` layout with domain-based packaging**
@@ -81,5 +81,5 @@ and cleanly separates installed package from project root.
 |---|---|
 | Java/Spring Boot | Slower iteration cycle, smaller AI ecosystem |
 | Go | Excellent performance but weak AI/ML library support |
-| Pinecone (vector DB) | Proprietary, conflicts with open-source positioning |
+| Pinecone (vector DB) | Vendor lock-in, prefer self-hosted for data sovereignty |
 | Django | Sync-first, heavier ORM, less suited for API-only backend |

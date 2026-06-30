@@ -10,7 +10,7 @@ Money laundering patterns (typologies) evolve constantly. A structuring techniqu
 
 The system must:
 1. Allow tenants to share abstract money laundering patterns (typologies) without exposing PII or transaction data.
-2. Enable the community to contribute and curate typologies.
+2. Enable tenants to contribute and curate typologies across the platform.
 3. Integrate shared typologies into the configurable rule engine (BE-305).
 4. Version-control typologies for audit trail and rollback.
 5. Maintain privacy: no raw data leaves the tenant boundary.
@@ -65,7 +65,7 @@ The system must:
   - `customised: bool` — whether the tenant modified the rule after adoption
   - `generated_rule_id: UUID | None` — FK to the tenant's monitoring rule created from this typology
 
-**Why:** The typology model captures the abstract pattern without any tenant-specific data. The `indicators` list provides human-readable markers. The `rule_template` enables one-click conversion to a monitoring rule. Adoption tracking measures community value.
+**Why:** The typology model captures the abstract pattern without any tenant-specific data. The `indicators` list provides human-readable markers. The `rule_template` enables one-click conversion to a monitoring rule. Adoption tracking measures platform value.
 
 ### Step 2: Implement Typology Contribution Pipeline
 
@@ -80,7 +80,7 @@ The system must:
     - Optionally auto-generates a `rule_template` from the indicators using an LLM prompt.
   - `async review(typology_id: str, decision: str, reviewer_notes: str)`:
     - Platform moderator reviews and approves/rejects.
-    - `PUBLISHED` typologies become visible in the community library.
+    - `PUBLISHED` typologies become visible in the shared typology library.
   - `async deprecate(typology_id: str, reason: str)`:
     - Marks as `DEPRECATED`. Notifies tenants who adopted it.
 
@@ -157,7 +157,7 @@ The system must:
   - Also ingests the typology descriptions into the RAG pipeline for agent reference during investigations.
 - Called during app startup.
 
-**Why:** Regulatory typologies provide immediate value without community contributions. They also serve as examples for tenants considering contributing their own.
+**Why:** Regulatory typologies provide immediate value without tenant contributions. They also serve as examples for tenants considering contributing their own.
 
 ### Step 7: Create Typology API
 
@@ -165,7 +165,7 @@ The system must:
 - `src/aml/api/routers/typologies.py`
 
 **Implementation Details:**
-- `GET /api/v1/typologies` — Search/browse the community library. Query params: `query`, `category`, `jurisdiction`, `sort`.
+- `GET /api/v1/typologies` — Search/browse the shared typology library. Query params: `query`, `category`, `jurisdiction`, `sort`.
 - `GET /api/v1/typologies/trending` — Trending typologies.
 - `GET /api/v1/typologies/recommended` — Recommendations for the tenant.
 - `GET /api/v1/typologies/{id}` — Typology details including effectiveness stats.

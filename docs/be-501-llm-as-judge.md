@@ -66,7 +66,7 @@ The pipeline must:
   - `load(version: str | None = None) -> GoldenDataset` — loads the latest or specific version.
   - `validate(dataset: GoldenDataset) -> list[str]` — validates completeness and schema.
 
-**Why:** The golden dataset is the ground truth for evaluation. Versioning ensures reproducibility. JSON files make it easy for the open-source community to contribute new test cases.
+**Why:** The golden dataset is the ground truth for evaluation. Versioning ensures reproducibility. JSON files make it easy for the team to add new test cases.
 
 ### Step 2: Implement Evaluation Rubrics
 

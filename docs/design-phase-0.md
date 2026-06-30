@@ -1,7 +1,7 @@
 # Phase 0: Project Bootstrap & Developer Experience
 
 ## 1. Objectives
-Establish the foundational infrastructure and developer experience to ensure rapid, high-quality, and open-source contributions.
+Establish the foundational infrastructure and developer experience to ensure rapid, high-quality development.
 
 ## 2. Core Components
 
@@ -22,4 +22,4 @@ Establish the foundational infrastructure and developer experience to ensure rap
 
 ### 2.4 Documentation & Open Source Guidelines (P0-04, P0-05)
 - **Architecture Decision Records (ADR)**: A formalized process for documenting major technical choices (e.g., choosing FastAPI over Django, or LangGraph over raw LangChain).
-- **Contribution Guide**: Standardized PR templates and issue tracking to foster the open-source community.
+- **Development Guide**: Standardized PR templates and issue tracking for internal development.

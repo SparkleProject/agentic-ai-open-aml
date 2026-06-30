@@ -1,7 +1,7 @@
 # Phase 6: Ecosystem Integrations & Market Readiness
 
 ## 1. Objectives
-Prepare the platform for wide-scale deployment by integrating with the tools Tranche 2 entities already use, and formally launching the open-source community.
+Prepare the platform for wide-scale deployment by integrating with the tools Tranche 2 entities already use and achieving market readiness.
 
 ## 2. Core Components
 
