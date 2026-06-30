@@ -60,6 +60,68 @@ async def onboard_customer(
     return _serialize_cdd(record)
 
 
+@router.get("/customers")
+async def list_kyc_customers(
+    x_tenant_id: str | None = Header(None, alias="X-Tenant-ID"),
+    db: AsyncSession = Depends(get_db),
+) -> dict[str, Any]:
+    tenant_id = _require_tenant(x_tenant_id)
+
+    stmt = select(Customer).where(Customer.tenant_id == tenant_id)
+    result = await db.execute(stmt)
+    customers = result.scalars().all()
+
+    customer_list = []
+    for c in customers:
+        cdd_stmt = (
+            select(CDDRecord)
+            .where(CDDRecord.customer_id == c.id, CDDRecord.tenant_id == tenant_id)
+            .order_by(CDDRecord.created_at.desc())
+            .limit(1)
+        )
+        cdd_result = await db.execute(cdd_stmt)
+        latest_cdd = cdd_result.scalar_one_or_none()
+
+        customer_list.append(
+            {
+                "id": str(c.id),
+                "name": c.name,
+                "entityType": c.customer_type.value,
+                "jurisdiction": (c.metadata_ or {}).get("jurisdiction", "AU"),
+                "tranche": (c.metadata_ or {}).get("tranche", "Tranche 2"),
+                "overallRiskLevel": _get_risk_level(latest_cdd),
+                "onboardingStage": latest_cdd.onboarding_stage if latest_cdd else "PENDING",
+                "onboardingProgress": _compute_progress(latest_cdd),
+                "overallRiskScore": latest_cdd.overall_risk_score if latest_cdd else 0,
+                "status": latest_cdd.status.value if latest_cdd else "pending",
+                "decision": latest_cdd.decision if latest_cdd else None,
+            }
+        )
+
+    return {"customers": customer_list, "count": len(customer_list)}
+
+
+def _get_risk_level(cdd: CDDRecord | None) -> str:
+    if not cdd or not cdd.risk_assessment:
+        return "LOW"
+    return cdd.risk_assessment.get("risk_level", "LOW").upper()
+
+
+def _compute_progress(cdd: CDDRecord | None) -> int:
+    if not cdd:
+        return 0
+    stage_map = {
+        "PENDING": 0,
+        "ID_VERIFICATION": 20,
+        "PEP_SCREENING": 40,
+        "SANCTIONS_CHECK": 60,
+        "ADVERSE_MEDIA": 70,
+        "RISK_SCORING": 90,
+        "COMPLETE": 100,
+    }
+    return stage_map.get(cdd.onboarding_stage, 0)
+
+
 @router.get("/customers/{customer_id}")
 async def get_customer_cdd(
     customer_id: str,
