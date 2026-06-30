@@ -162,6 +162,52 @@ async def approve_report(
     }
 
 
+@router.post("/reports/{report_id}/submit")
+async def submit_report(
+    report_id: str,
+    x_tenant_id: str | None = Header(None, alias="X-Tenant-ID"),
+    db: AsyncSession = Depends(get_db),
+) -> dict[str, Any]:
+    tenant_id = _require_tenant(x_tenant_id)
+    report = await _fetch_report(db, report_id, tenant_id)
+
+    from aml.services.reporting.submission.service import ReportSubmissionService
+
+    service = ReportSubmissionService()
+    result = await service.submit_report(report)
+    await db.commit()
+
+    return {
+        "report_id": str(report.id),
+        "success": result.success,
+        "reference": result.reference,
+        "error": result.error,
+        "status": report.status.value,
+    }
+
+
+@router.get("/reports/{report_id}/submission-status")
+async def get_submission_status(
+    report_id: str,
+    x_tenant_id: str | None = Header(None, alias="X-Tenant-ID"),
+    db: AsyncSession = Depends(get_db),
+) -> dict[str, Any]:
+    tenant_id = _require_tenant(x_tenant_id)
+    report = await _fetch_report(db, report_id, tenant_id)
+
+    from aml.services.reporting.submission.service import ReportSubmissionService
+
+    service = ReportSubmissionService()
+    status = await service.check_status(report)
+
+    return {
+        "report_id": str(report.id),
+        "submission_reference": report.submission_reference,
+        "status": status.status,
+        "details": status.details,
+    }
+
+
 async def _fetch_report(db: AsyncSession, report_id: str, tenant_id: str) -> Report:
     try:
         report_uuid = uuid.UUID(report_id)

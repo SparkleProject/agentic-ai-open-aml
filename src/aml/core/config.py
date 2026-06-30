@@ -74,6 +74,16 @@ class Settings(BaseSettings):
     milvus_host: str = "localhost"
     milvus_port: int = 19530
 
+    # --- Regulatory Submission ---
+    austrac_api_url: str | None = None
+    austrac_api_key: str | None = None
+    austrac_mock_mode: bool = True
+    nz_fiu_api_url: str | None = None
+    nz_fiu_client_id: str | None = None
+    nz_fiu_client_secret: str | None = None
+    nz_fiu_mock_mode: bool = True
+    submission_max_retries: int = 5
+
     # --- Logging ---
     log_level: str = "INFO"
     log_format: str = Field(default="json", description="json | console")
