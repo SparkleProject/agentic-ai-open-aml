@@ -74,6 +74,10 @@ class Settings(BaseSettings):
     milvus_host: str = "localhost"
     milvus_port: int = 19530
 
+    # --- Guardrails ---
+    guardrails_enabled: bool = Field(default=False, description="Wrap LLM with guardrails")
+    pii_redaction_mode: str = Field(default="mask", description="mask | hash | remove")
+
     # --- Regulatory Submission ---
     austrac_api_url: str | None = None
     austrac_api_key: str | None = None

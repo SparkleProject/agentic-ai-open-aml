@@ -45,3 +45,16 @@ def get_llm_provider(settings: Settings) -> LLMProvider:
 
     msg = f"Unknown LLM provider: {name}"
     raise ValueError(msg)
+
+
+def _maybe_wrap_guardrails(provider: LLMProvider, settings: Settings) -> LLMProvider:
+    if not settings.guardrails_enabled:
+        return provider
+
+    from aml.services.guardrails.guarded_llm import GuardedLLMProvider
+    from aml.services.guardrails.pii_redactor import PIIRedactor
+
+    return GuardedLLMProvider(
+        provider=provider,
+        pii_redactor=PIIRedactor(mode=settings.pii_redaction_mode),
+    )  # type: ignore[return-value]
