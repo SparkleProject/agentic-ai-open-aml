@@ -1,11 +1,16 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from decimal import Decimal
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from aml.db.models.alert import AlertSeverity
 from aml.services.monitoring.anomaly import AnomalyScorer, CustomerProfile
 from aml.services.monitoring.rules import RuleEngine
 from aml.services.monitoring.schemas import MonitoringRule
+
+if TYPE_CHECKING:
+    from aml.services.monitoring.rule_cache import RuleCache
 
 ANOMALY_THRESHOLD_DEFAULT = 40.0
 
@@ -28,10 +33,12 @@ class TransactionEvaluator:
         rule_engine: RuleEngine | None = None,
         anomaly_scorer: AnomalyScorer | None = None,
         anomaly_threshold: float = ANOMALY_THRESHOLD_DEFAULT,
+        rule_cache: RuleCache | None = None,
     ) -> None:
         self._rule_engine = rule_engine or RuleEngine()
         self._anomaly_scorer = anomaly_scorer or AnomalyScorer()
         self._anomaly_threshold = anomaly_threshold
+        self._rule_cache = rule_cache
 
     def evaluate(
         self,
@@ -104,6 +111,26 @@ class TransactionEvaluator:
                 },
             )
         ]
+
+    async def evaluate_with_cache(
+        self,
+        *,
+        transaction: dict[str, Any],
+        tenant_id: str,
+        customer_id: str,
+        profile: CustomerProfile,
+        entity_type: str | None = None,
+    ) -> list[AlertData]:
+        if self._rule_cache is None:
+            raise RuntimeError("rule_cache not configured")
+        rules = await self._rule_cache.get_rules(tenant_id=tenant_id, entity_type=entity_type)
+        return self.evaluate(
+            transaction=transaction,
+            rules=rules,
+            profile=profile,
+            customer_id=customer_id,
+            tenant_id=tenant_id,
+        )
 
     @staticmethod
     def _score_to_severity(score: float) -> AlertSeverity:
