@@ -30,6 +30,8 @@ def test_settings() -> Settings:
 def reset_global_state(monkeypatch, test_settings):
     """Reset global/class variables between tests and monkeypatch get_settings globally."""
     import aml.agents.nodes
+    import aml.api.middleware
+    import aml.api.routers.auth
     import aml.api.routers.rag
     import aml.app
     import aml.core.config
@@ -53,6 +55,8 @@ def reset_global_state(monkeypatch, test_settings):
         aml.services.reporting.narrative,
         aml.services.reporting.verification,
         aml.api.routers.rag,
+        aml.api.routers.auth,
+        aml.api.middleware,
         aml.agents.nodes,
     ]:
         monkeypatch.setattr(module, "get_settings", lambda: test_settings)

@@ -74,6 +74,13 @@ class Settings(BaseSettings):
     milvus_host: str = "localhost"
     milvus_port: int = 19530
 
+    # --- Authentication ---
+    auth_provider: str = Field(default="jwt", description="jwt | cognito | keycloak")
+    jwt_secret_key: str = "dev-secret-change-in-production"  # noqa: S105
+    jwt_algorithm: str = "HS256"
+    jwt_access_token_expire_minutes: int = 30
+    jwt_refresh_token_expire_days: int = 7
+
     # --- Guardrails ---
     guardrails_enabled: bool = Field(default=False, description="Wrap LLM with guardrails")
     pii_redaction_mode: str = Field(default="mask", description="mask | hash | remove")

@@ -119,6 +119,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     # --- Routers ---
     app.include_router(health_router, prefix="/api")
 
+    from aml.api.routers.auth import router as auth_router
+
+    app.include_router(auth_router, prefix="/api/v1")
+
     from aml.api.routers.rag import router as rag_router
 
     app.include_router(rag_router, prefix="/api/v1")

@@ -9,6 +9,7 @@ from aml.db.models.report import Report
 from aml.db.models.rule import RuleVersion, TenantRule
 from aml.db.models.tenant import Tenant
 from aml.db.models.transaction import Transaction
+from aml.db.models.user import User
 
 __all__ = [
     "Alert",
@@ -21,4 +22,5 @@ __all__ = [
     "Tenant",
     "TenantRule",
     "Transaction",
+    "User",
 ]
