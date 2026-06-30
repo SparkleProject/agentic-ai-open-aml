@@ -56,7 +56,7 @@ CDD_AGENT = AgentDefinition(
         "Ensure beneficial owners have valid ID checks. If you need transaction history "
         "or sanctions verification, DELEGATE to the appropriate agent."
     ),
-    tool_whitelist=["TransactionLookupTool"],  # Extendable when ASIC tools are built
+    tool_whitelist=["TransactionLookupTool", "AdverseMediaTool"],
 )
 
 SAR_NARRATIVE_AGENT = AgentDefinition(
