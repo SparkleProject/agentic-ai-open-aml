@@ -48,6 +48,7 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
     # TODO (Phase 1): Initialise Redis client
     # TODO (Phase 2): Initialise vector DB client
     from aml.agents.tools.local.adverse_media import AdverseMediaTool
+    from aml.agents.tools.local.entity_unwrap import EntityUnwrapTool
     from aml.agents.tools.local.screening import PEPScreeningTool, SanctionsTool
     from aml.agents.tools.local.transactions import TransactionLookupTool
     from aml.agents.tools.registry import ToolRegistry
@@ -57,6 +58,7 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
     registry.register(PEPScreeningTool())
     registry.register(TransactionLookupTool())
     registry.register(AdverseMediaTool())
+    registry.register(EntityUnwrapTool())
     await logger.ainfo("agent_tools_registered", tools=list(registry._tools.keys()))
 
     yield
@@ -144,5 +146,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     from aml.api.routers.kyc import router as kyc_router
 
     app.include_router(kyc_router, prefix="/api/v1")
+
+    from aml.api.routers.entities import router as entities_router
+
+    app.include_router(entities_router, prefix="/api/v1")
 
     return app
