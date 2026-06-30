@@ -151,4 +151,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app.include_router(entities_router, prefix="/api/v1")
 
+    from aml.api.routers.governance import router as governance_router
+
+    app.include_router(governance_router, prefix="/api/v1")
+
     return app
